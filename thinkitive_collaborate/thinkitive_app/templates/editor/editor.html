@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Editing</title>
+    <script>
+        const docId = "{{ doc_id }}"; 
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/editor/' + docId + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.getElementById('document-content').value = data.content;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.getElementById('document-content').addEventListener('input', function(e) {
+            chatSocket.send(JSON.stringify({
+                'content': e.target.value
+            }));
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Document Editing</h2>
+        <textarea id="document-content" rows="10" cols="50"></textarea>
+    </div>
+</body>
+</html>
