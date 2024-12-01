@@ -5,15 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Editing</title>
     <script>
-        const docId = "{{ doc_id }}"; 
+        const docId = "{{ doc_id }}";
         const chatSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/editor/' + docId + '/'
         );
 
         chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.getElementById('document-content').value = data.content;
-        };
+        const data = JSON.parse(e.data);
+
+        document.getElementById('document-content').value = data.content;
+
+        const suggestions = data.suggestions.matches.map(match => match.message).join('. ');
+        document.getElementById('suggestion-text').textContent = suggestions || "No suggestions available";
+};
+
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
@@ -27,9 +32,13 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <h2>Document Editing</h2>
+    <div>
         <textarea id="document-content" rows="10" cols="50"></textarea>
+        <div id="suggestion-box" style="border: 1px solid #ccc; margin-top: 10px; padding: 5px; background: #f9f9f9; max-width: 400px;  margin-right: auto;">
+            Suggestions: <span id="suggestion-text"></span>
+        </div>
+        
     </div>
+    
 </body>
 </html>

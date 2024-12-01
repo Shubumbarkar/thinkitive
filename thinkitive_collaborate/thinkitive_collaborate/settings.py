@@ -132,6 +132,6 @@ CHANNEL_LAYERS = {
 }
 
 LOGIN_URL = '/login/'  
-LOGIN_REDIRECT_URL = '/editor/1' 
+LOGIN_REDIRECT_URL = '/editor/' 
 
 

@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
+from .models import Document
+from django.http import HttpResponseNotFound
 
 def register(request):
     if request.method == "POST":
@@ -25,9 +27,15 @@ def register(request):
         messages.success(request, "You are registered successfully! Now, you can log in.")
         return redirect('login')    
     return render(request, 'editor/register.html')
+
 @login_required
 def editor(request, doc_id):
-    return render(request, 'editor/editor.html', {'doc_id': doc_id})
+    try:
+        document = Document.objects.get(id=doc_id)
+        return render(request, 'editor/editor.html', {'doc_id': doc_id, 'title': document.title})
+    except Document.DoesNotExist:
+        return HttpResponseNotFound("The requested document does not exist.")
+    
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
