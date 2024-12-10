@@ -1,6 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .models import Document
+from .models import Document    
 from .utils import get_ai_suggestions  
 class DocumentConsumer(AsyncWebsocketConsumer):
     async def connect(self):

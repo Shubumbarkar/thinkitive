@@ -4,6 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Editing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #007bff, #6610f2);
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        .editor-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            resize: none;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+        }
+        #suggestion-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f9f9f9;
+            color: #333;
+            font-size: 0.95rem;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        #suggestion-box span {
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
     <script>
         const docId = "{{ doc_id }}";
         const chatSocket = new WebSocket(
@@ -11,14 +56,12 @@
         );
 
         chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
+            const data = JSON.parse(e.data);
+            document.getElementById('document-content').value = data.content;
 
-        document.getElementById('document-content').value = data.content;
-
-        const suggestions = data.suggestions.matches.map(match => match.message).join('. ');
-        document.getElementById('suggestion-text').textContent = suggestions || "No suggestions available";
-};
-
+            const suggestions = data.suggestions.matches.map(match => match.message).join('. ');
+            document.getElementById('suggestion-text').textContent = suggestions || "No suggestions available.";
+        };
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
@@ -32,13 +75,12 @@
     </script>
 </head>
 <body>
-    <div>
-        <textarea id="document-content" rows="10" cols="50"></textarea>
-        <div id="suggestion-box" style="border: 1px solid #ccc; margin-top: 10px; padding: 5px; background: #f9f9f9; max-width: 400px;  margin-right: auto;">
-            Suggestions: <span id="suggestion-text"></span>
+    <div class="editor-container">
+        <h1 class="text-center mb-4 text-primary">Document Editor</h1>
+        <textarea id="document-content" placeholder="Start typing your document here..."></textarea>
+        <div id="suggestion-box">
+            <strong>Suggestions:</strong> <span id="suggestion-text">No suggestions available.</span>
         </div>
-        
     </div>
-    
 </body>
 </html>
